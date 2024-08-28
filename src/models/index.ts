@@ -1,7 +1,7 @@
 import sequelize from '../config/db';
 
 const db = {
-    sequelize,
+  sequelize,
 };
 
 export default db;
