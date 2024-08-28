@@ -1,7 +1,7 @@
-import sequelize from '../config/db';
+import User from './user.model';
 
-const db = {
-  sequelize,
+const models = {
+  User,
 };
 
-export default db;
+export default models;

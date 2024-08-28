@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from '../interfaces/session.interface';
 
 export const asyncHandler = (
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<void>,
+  fn: (req: AuthRequest, res: Response, next: NextFunction) => Promise<void>,
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    fn(req, res, next).catch(next);
+    fn(req as AuthRequest, res, next).catch(next);
   };
 };

@@ -1,11 +1,12 @@
-import { Request, Response } from 'express';
+import { AuthRequest } from '../interfaces/session.interface';
+import { Response } from 'express';
 
 import { asyncHandler } from '../utils/async-handler.util';
 
 import { findQuestions } from '../services/question.service';
 
 export const getQuestions = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       res.json(await findQuestions());
     } catch (err: any) {
