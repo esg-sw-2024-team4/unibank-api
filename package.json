@@ -10,6 +10,13 @@
     "test:watch": "jest --watch --config jest.config.js",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "src/**/*.{js,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "author": "konerds",
   "license": "ISC",
   "description": "",
