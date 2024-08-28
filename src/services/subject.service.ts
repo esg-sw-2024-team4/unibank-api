@@ -1,3 +1,5 @@
+import { IMResponse } from '../interfaces/dto.interface';
+
 export const findSubjects = async () => {
-    return {};
+    return {} as IMResponse<any>;
 };
