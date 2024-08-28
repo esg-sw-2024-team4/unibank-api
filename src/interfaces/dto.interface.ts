@@ -1,12 +1,12 @@
 export interface IMetadata {
-    total: number;
+  total: number;
 }
 
 export interface ISResponse<T> {
-    metadata: IMetadata;
-    data: T[];
+  metadata: IMetadata;
+  data: T[];
 }
 
 export interface IMResponse<T> {
-    data: T;
+  data: T;
 }

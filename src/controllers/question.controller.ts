@@ -4,10 +4,12 @@ import { asyncHandler } from '../utils/async-handler.util';
 
 import { findQuestions } from '../services/question.service';
 
-export const getQuestions = asyncHandler(async (req: Request, res: Response) => {
+export const getQuestions = asyncHandler(
+  async (req: Request, res: Response) => {
     try {
-        res.json(await findQuestions());
+      res.json(await findQuestions());
     } catch (err: any) {
-        res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
-});
+  },
+);
