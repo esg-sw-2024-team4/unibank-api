@@ -4,7 +4,7 @@ import userRoutes from './routes/user.routes';
 import subjectRoutes from './routes/subject.routes';
 import questionRoutes from './routes/question.routes';
 
-import { handleError } from './middlewares/error.middleware';
+import handleError from './middlewares/error.middleware';
 
 const app = express();
 
