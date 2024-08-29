@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 
 import { IInfoJWTPayload } from '../interfaces/jwt.interface';
-import { JWT_SECRET } from '../config/env';
+import { JWT_EXPIRES_IN, JWT_SECRET } from '../config/env';
 
 import User from '../models/user.model';
 
 export const issueToken = ({ id, googleId, email }: IInfoJWTPayload) =>
   jwt.sign({ id, googleId, email }, JWT_SECRET, {
-    expiresIn: '3h',
+    expiresIn: JWT_EXPIRES_IN || '3h',
   });
 
 export const deleteUser = async (id: number) => {
