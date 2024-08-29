@@ -4,6 +4,8 @@ import cors from 'cors';
 
 import corsOptions from './config/cors';
 
+import helmet from 'helmet';
+
 import authRoutes from './routes/auth.routes';
 import subjectRoutes from './routes/subject.routes';
 import questionRoutes from './routes/question.routes';
@@ -16,6 +18,8 @@ import logger from './middlewares/logger.middleware';
 const app = express();
 
 app.use(cors(corsOptions));
+
+app.use(helmet());
 
 app.use(express.json());
 
