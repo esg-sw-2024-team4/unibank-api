@@ -13,3 +13,4 @@
 | GOOGLE_CLIENT_ID     | Google OAuth API Client ID     |
 | GOOGLE_CLIENT_SECRET | Google OAuth API Client Secret |
 | JWT_SECRET           | JWT Secret 키                  |
+| WHITELIST            | 프론트엔드 웹 서버 주소        |
