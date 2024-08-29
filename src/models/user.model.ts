@@ -13,7 +13,6 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare googleId: string;
   declare email: string;
   declare name: string;
-  declare userType: string | null;
   declare point: number | null;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -39,11 +38,6 @@ User.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    userType: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: 'student',
     },
     point: {
       type: DataTypes.INTEGER.UNSIGNED,
