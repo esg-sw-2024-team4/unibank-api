@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthRequest } from '../interfaces/session.interface';
+import { AuthRequest } from '../interfaces/http.interface';
 
 export const asyncHandler = (
   fn: (req: AuthRequest, res: Response, next: NextFunction) => Promise<void>,

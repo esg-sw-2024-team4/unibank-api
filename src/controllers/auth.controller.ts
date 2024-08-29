@@ -1,4 +1,4 @@
-import { AuthRequest } from '../interfaces/session.interface';
+import { AuthRequest } from '../interfaces/http.interface';
 import { NextFunction, Response } from 'express';
 
 import { asyncHandler } from '../utils/async-handler.util';
