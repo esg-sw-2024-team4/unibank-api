@@ -7,6 +7,7 @@ import passport from '../utils/passport';
 
 import { issueToken, deleteUser } from '../services/auth.service';
 import User from '../models/user.model';
+import { FRONT_WEB_URL } from '../config/env';
 
 export const auth = asyncHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -35,7 +36,9 @@ export const authCallback = asyncHandler(
             return res.status(401).json({ message: info });
           }
           const { id, googleId, email } = user;
-          res.json(issueToken({ id, googleId, email }));
+          res.redirect(
+            `${FRONT_WEB_URL}/auth?token=${issueToken({ id, googleId, email })}`,
+          );
         } catch (err) {
           next(err);
         }
@@ -52,5 +55,16 @@ export const deleteAccount = asyncHandler(
     }
     await deleteUser(user.id);
     res.status(204).end();
+  },
+);
+
+export const checkIsAuthenticated = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const { user } = req;
+    if (!user) {
+      throw new Error('Invalid request...');
+    }
+    const { id, name, email, point } = user.dataValues;
+    res.json({ id: id, name: name, email: email, point: point });
   },
 );
