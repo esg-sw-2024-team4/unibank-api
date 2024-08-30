@@ -1,7 +1,6 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import { FRONT_WEB_URL } from './env';
 
 export default {
-  origin: process.env.WHITELIST,
+  origin: FRONT_WEB_URL,
   credentials: true,
 };

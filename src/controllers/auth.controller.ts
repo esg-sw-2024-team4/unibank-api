@@ -11,6 +11,7 @@ import { FRONT_WEB_URL } from '../config/env';
 
 export const auth = asyncHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
+    // #swagger.ignore = true
     passport.authenticate('google', { scope: ['profile', 'email'] })(
       req,
       res,
@@ -21,6 +22,7 @@ export const auth = asyncHandler(
 
 export const authCallback = asyncHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
+    // #swagger.ignore = true
     if (req.query?.error) {
       throw new Error('Something went wrong...');
     }

@@ -6,7 +6,7 @@ import { JWT_EXPIRES_IN, JWT_SECRET } from '../config/env';
 import User from '../models/user.model';
 
 export const issueToken = ({ id, googleId, email }: IInfoJWTPayload) =>
-  jwt.sign({ id, googleId, email }, JWT_SECRET, {
+  jwt.sign({ id, googleId, email }, JWT_SECRET!, {
     expiresIn: JWT_EXPIRES_IN || '3h',
   });
 

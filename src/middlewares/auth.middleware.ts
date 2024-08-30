@@ -18,7 +18,7 @@ export const authMiddleware = async (
     }
     const { id } = jwt.verify(
       authorization.split(' ')[1],
-      JWT_SECRET,
+      JWT_SECRET!,
     ) as IJWTDecoded;
     const user = await User.findByPk(id);
     if (!user) {
