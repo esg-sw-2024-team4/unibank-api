@@ -1,9 +1,11 @@
 import app from './app';
 
+import { PORT } from './config/env';
+
 import logger from './middlewares/logger.middleware';
 
-const PORT = process.env.PORT || 3010;
+const port = PORT || 3000;
 
-app.listen(PORT, () => {
-  logger.info(`Running on ${PORT}`);
+app.listen(port, () => {
+  logger.info(`Running on ${port}`);
 });
