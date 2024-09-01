@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
 import { JWT_SECRET } from '../config/env';
 import { IJWTDecoded } from '../interfaces/jwt.interface';
+import logger from './logger.middleware';
 
 export const authMiddleware = async (
   req: Request,
@@ -26,7 +27,8 @@ export const authMiddleware = async (
     }
     req.user = user;
     next();
-  } catch (error) {
+  } catch (err: any) {
+    logger.error(err?.message);
     return res.status(401).json({ message: 'Invalid request...' });
   }
 };
