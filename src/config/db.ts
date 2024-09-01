@@ -13,8 +13,9 @@ dotenv.config();
 
 const sequelize =
   NODE_ENV === 'test'
-    ? new Sequelize('sqlite::memory:', {
+    ? new Sequelize({
         dialect: 'sqlite',
+        storage: ':memory:',
         logging: false,
       })
     : new Sequelize(DB_NAME!, DB_USER!, DB_PASSWORD, {

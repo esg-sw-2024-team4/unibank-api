@@ -11,7 +11,7 @@ const router = Router();
 
 router.get('/', auth);
 router.get('/callback', authCallback);
-router.delete('/', authMiddleware, deleteAccount);
 router.get('/check', authMiddleware, checkIsAuthenticated);
+router.delete('/', authMiddleware, deleteAccount);
 
 export default router;

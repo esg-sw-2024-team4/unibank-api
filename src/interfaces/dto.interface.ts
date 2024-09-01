@@ -10,3 +10,9 @@ export interface ISResponse<T> {
 export interface IMResponse<T> {
   data: T;
 }
+
+export interface IUserProfile {
+  googleId: string;
+  email: string;
+  name: string;
+}

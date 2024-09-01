@@ -7,7 +7,6 @@ import {
 } from 'sequelize';
 import sequelize from '../config/db';
 
-// Subject Model
 class Subject extends Model<
   InferAttributes<Subject>,
   InferCreationAttributes<Subject>
@@ -17,7 +16,6 @@ class Subject extends Model<
   declare description: string;
 }
 
-// Subject init
 Subject.init(
   {
     id: {

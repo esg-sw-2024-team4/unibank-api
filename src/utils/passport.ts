@@ -2,10 +2,9 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/env';
 
-import dotenv from 'dotenv';
-dotenv.config();
-
 import User from '../models/user.model';
+import { createOrUpdateUser } from '../services/auth.service';
+import { withTransaction } from './with-transaction.util';
 
 passport.use(
   new GoogleStrategy(
@@ -16,19 +15,19 @@ passport.use(
     },
     async (_, __, profile, done) => {
       try {
-        let user = await User.findOne({ where: { googleId: profile.id } });
-        if (!user) {
-          user = await User.create({
-            googleId: profile.id,
-            email: profile.emails![0].value,
-            name: profile.displayName,
-          });
-        } else {
-          user.email = profile.emails![0].value;
-          user.name = profile.displayName;
-          await user.save();
-        }
-        return done(null, user as User);
+        return done(
+          null,
+          await withTransaction(async (tx) =>
+            createOrUpdateUser(
+              {
+                googleId: profile.id,
+                email: profile.emails![0].value,
+                name: profile.displayName,
+              },
+              tx,
+            ),
+          ),
+        );
       } catch (err) {
         return done(err);
       }

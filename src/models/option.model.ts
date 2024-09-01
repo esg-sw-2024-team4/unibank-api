@@ -9,9 +9,9 @@ import sequelize from '../config/db';
 import Subject from './subject.model';
 import User from './user.model';
 
-class Question extends Model<
-  InferAttributes<Question>,
-  InferCreationAttributes<Question>
+class Option extends Model<
+  InferAttributes<Option>,
+  InferCreationAttributes<Option>
 > {
   declare id: CreationOptional<number>;
   declare subjectId: number;
@@ -26,7 +26,7 @@ class Question extends Model<
   declare updatedAt: CreationOptional<Date>;
 }
 
-Question.init(
+Option.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -82,4 +82,4 @@ Question.init(
   },
 );
 
-export default Question;
+export default Option;
