@@ -12,7 +12,7 @@ const router = Router();
 
 router.get('/', getQuestions);
 router.get('/:id', authMiddleware, getQuestionById);
-router.post('/:id', authMiddleware, createQuestion);
+router.post('/', authMiddleware, createQuestion);
 router.put('/:id', authMiddleware, updateQuestion);
 router.delete('/:id', authMiddleware, deleteQuestion);
 

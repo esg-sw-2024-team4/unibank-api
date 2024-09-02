@@ -17,7 +17,6 @@ class Question extends Model<
   declare subjectId: number;
   declare authorId: number;
   declare questionText: string;
-  declare questionType: string;
   declare correctAnswer: string;
   declare explanation: string;
   declare imageUrl: string | null;
@@ -46,10 +45,6 @@ Question.init(
     },
     questionText: {
       type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    questionType: {
-      type: DataTypes.STRING,
       allowNull: false,
     },
     correctAnswer: {

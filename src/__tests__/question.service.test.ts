@@ -12,11 +12,11 @@ import Subject from '../models/subject.model';
 import User from '../models/user.model';
 
 let transaction: Transaction;
+
 const mockQuestion = {
   subject_id: 1,
   author_id: 1,
   question_text: 'What is 2+2?',
-  question_type: 'multiple_choice',
   correct_answer: '4',
   explanation: 'Basic arithmetic.',
   image_url: 'http://example.com/image1.png',
@@ -46,7 +46,6 @@ describe('Question Service', () => {
     });
     afterEach(async () => {
       await transaction.rollback();
-      //await sequelize.close();
     });
 
     describe('addQuestion', () => {
