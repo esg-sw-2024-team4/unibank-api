@@ -26,7 +26,7 @@ export const getQuestionById = asyncHandler(
 
 export const createQuestion = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const questionData = req.body;
+    const questionData = { ...req.body, author_id: req.user!.id };
 
     res.json(
       await withTransaction(async (tx) => addQuestion(questionData, tx)),
