@@ -1,5 +1,5 @@
 import { Transaction } from 'sequelize';
-import { IQuestionData, ISResponse } from '../interfaces/dto.interface';
+import { IQuestionData } from '../interfaces/dto.interface';
 import Question from '../models/question.model';
 import { convertKeysToCamel } from '../utils/converter.util';
 
@@ -14,7 +14,7 @@ export const findQuestions = async () => {
       total: count,
     },
     data: rows,
-  } as ISResponse<any>;
+  };
 };
 
 export const findQuestionById = async (id: number) => {
@@ -30,7 +30,6 @@ export const addQuestion = async (
   transaction: Transaction,
 ) => {
   const data = convertKeysToCamel(questionData);
-
   const newQuestion = await Question.create(data, { transaction });
   return newQuestion;
 };
@@ -50,7 +49,6 @@ export const modifyQuestion = async (
 
 export const removeQuestion = async (id: number, transaction: Transaction) => {
   const question = await Question.findByPk(id);
-
   if (!question) {
     throw new Error('');
   }
