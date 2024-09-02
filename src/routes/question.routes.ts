@@ -1,8 +1,19 @@
 import { Router } from 'express';
-import { getQuestions } from '../controllers/question.controller';
+import {
+  createQuestion,
+  deleteQuestion,
+  getQuestionById,
+  getQuestions,
+  updateQuestion,
+} from '../controllers/question.controller';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 const router = Router();
 
 router.get('/', getQuestions);
+router.get('/:id', authMiddleware, getQuestionById);
+router.post('/:id', authMiddleware, createQuestion);
+router.put('/:id', authMiddleware, updateQuestion);
+router.delete('/:id', authMiddleware, deleteQuestion);
 
 export default router;
