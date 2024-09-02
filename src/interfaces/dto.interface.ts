@@ -26,3 +26,8 @@ export interface IQuestionData {
   image_url: string | null;
   source: string;
 }
+
+export interface ISubjectData {
+  name: string;
+  description: string;
+}
