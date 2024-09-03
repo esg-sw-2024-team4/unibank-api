@@ -1,7 +1,10 @@
 import { Transaction } from 'sequelize';
 import sequelize from '../config/db';
-import Subject from '../models/subject.model';
 import { findSubjectsByKeyword } from '../services/subject.service';
+
+import models from '../models';
+
+const { Subject } = models;
 
 let transaction: Transaction;
 

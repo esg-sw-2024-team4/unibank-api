@@ -1,19 +1,26 @@
 import {
   CreationOptional,
   DataTypes,
+  HasManyGetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from 'sequelize';
 import sequelize from '../config/db';
+import Question from './question.model';
 
 class Subject extends Model<
-  InferAttributes<Subject>,
-  InferCreationAttributes<Subject>
+  InferAttributes<Subject, { omit: 'questions' }>,
+  InferCreationAttributes<Subject, { omit: 'questions' }>
 > {
   declare id: CreationOptional<number>;
   declare name: string;
   declare description: string;
+
+  declare getQuestions: HasManyGetAssociationsMixin<Question>;
+
+  declare questions?: NonAttribute<Question[]>;
 }
 
 Subject.init(

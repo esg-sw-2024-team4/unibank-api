@@ -4,19 +4,23 @@ import {
   findSubjectById,
   findSubjectsByKeyword,
 } from '../services/subject.service';
-import { withTransaction } from '../utils/with-transaction.util';
+import sequelize from '../config/db';
 
 export const getSubjects = asyncHandler(async (req, res) => {
-  const { search } = req.query;
-  res.json(await findSubjectsByKeyword((search as string) || ''));
+  // #swagger.description = "모든 과목 조회"
+  res.json(await findSubjectsByKeyword((req.query.search as string) || ''));
 });
 
 export const postSubject = asyncHandler(async (req, res) => {
-  const subjectData = { ...req.body, author_id: req.user!.id };
-  res.json(await withTransaction((tx) => createSubject(subjectData, tx)));
+  // #swagger.description = "과목 등록"
+  res.json(
+    await sequelize.transaction((tx) =>
+      createSubject(tx, { ...req.body, author_id: req.user!.id }),
+    ),
+  );
 });
 
 export const getSubjectById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  res.json(await findSubjectById(Number(id)));
+  // #swagger.description = "기본 키로 과목 조회"
+  res.json(await findSubjectById(+req.params.id));
 });

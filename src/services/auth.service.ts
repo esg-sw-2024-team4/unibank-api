@@ -1,3 +1,5 @@
+import models from '../models/index';
+
 import { Transaction } from 'sequelize';
 
 import jwt from 'jsonwebtoken';
@@ -5,8 +7,9 @@ import jwt from 'jsonwebtoken';
 import { IInfoJWTPayload } from '../interfaces/jwt.interface';
 import { JWT_EXPIRES_IN, JWT_SECRET } from '../config/env';
 
-import User from '../models/user.model';
 import { IUserProfile } from '../interfaces/dto.interface';
+
+const { User } = models;
 
 export const issueToken = ({ id, googleId, email }: IInfoJWTPayload) =>
   jwt.sign({ id, googleId, email }, JWT_SECRET!, {
@@ -14,8 +17,8 @@ export const issueToken = ({ id, googleId, email }: IInfoJWTPayload) =>
   });
 
 export const createOrUpdateUser = async (
-  profile: IUserProfile,
   transaction: Transaction,
+  profile: IUserProfile,
 ) => {
   const { googleId, email, name } = profile;
   let user = await User.findOne({ where: { googleId }, transaction });
@@ -36,7 +39,7 @@ export const createOrUpdateUser = async (
   return user;
 };
 
-export const deleteUser = async (id: number, transaction: Transaction) => {
+export const deleteUser = async (transaction: Transaction, id: number) => {
   const user = await User.findByPk(id, { transaction });
   if (!user) {
     throw new Error('Invalid request...');

@@ -1,7 +1,10 @@
-import Subject from '../models/subject.model';
+import models from '../models/index';
+
 import { Op, Transaction } from 'sequelize';
 import { ISubjectData } from '../interfaces/dto.interface';
 import { convertKeysToCamel } from '../utils/converter.util';
+
+const { Subject } = models;
 
 export const findSubjectsByKeyword = async (search: string) => {
   const { count, rows } = await Subject.findAndCountAll({
@@ -18,8 +21,8 @@ export const findSubjectsByKeyword = async (search: string) => {
 };
 
 export const createSubject = async (
-  subjectData: ISubjectData,
   transaction: Transaction,
+  subjectData: ISubjectData,
 ) => {
   const newSubject = await Subject.create(convertKeysToCamel(subjectData), {
     transaction,

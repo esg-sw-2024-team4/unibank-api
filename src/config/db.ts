@@ -1,6 +1,5 @@
 import { Dialect, Sequelize } from 'sequelize';
 
-import dotenv from 'dotenv';
 import {
   NODE_ENV,
   DB_DIALECT,
@@ -9,7 +8,6 @@ import {
   DB_PASSWORD,
   DB_USER,
 } from './env';
-dotenv.config();
 
 const sequelize =
   NODE_ENV === 'test'

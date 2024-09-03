@@ -7,35 +7,31 @@ import {
   Model,
 } from 'sequelize';
 import sequelize from '../config/db';
+import User from './user.model';
 import Question from './question.model';
 
-class Option extends Model<
-  InferAttributes<Option>,
-  InferCreationAttributes<Option>
+class UserAnswerQuestion extends Model<
+  InferAttributes<UserAnswerQuestion>,
+  InferCreationAttributes<UserAnswerQuestion>
 > {
   declare id: CreationOptional<number>;
-  declare questionId: ForeignKey<Question['id']>;
-  declare option: number;
-  declare isCorrect: boolean;
+  declare user_id: ForeignKey<User['id']>;
+  declare question_id: ForeignKey<Question['id']>;
+  declare answer: number;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
 
-Option.init(
+UserAnswerQuestion.init(
   {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    option: {
+    answer: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    isCorrect: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -46,8 +42,8 @@ Option.init(
   },
   {
     sequelize,
-    tableName: 'options',
+    tableName: 'user_answer_questions',
   },
 );
 
-export default Option;
+export default UserAnswerQuestion;
