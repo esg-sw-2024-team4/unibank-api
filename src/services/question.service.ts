@@ -1,12 +1,14 @@
 import { Transaction } from 'sequelize';
-import { IQuestionData } from '../interfaces/dto.interface';
-import Question from '../models/question.model';
+import { IOptionData, IQuestionData } from '../interfaces/dto.interface';
+import models from '../models/index';
 import { convertKeysToCamel } from '../utils/converter.util';
+
+const { User, Question, Subject } = models;
 
 export const findQuestions = async () => {
   const { count, rows } = await Question.findAndCountAll({
     attributes: {
-      exclude: ['correct_answer', 'explanation', 'created_at', 'updated_at'],
+      exclude: ['created_at', 'updated_at'],
     },
   });
   return {
@@ -18,7 +20,9 @@ export const findQuestions = async () => {
 };
 
 export const findQuestionById = async (id: number) => {
-  const question = await Question.findByPk(id);
+  const question = await Question.findByPk(id, {
+    include: [Question.associations.options],
+  });
   if (!question) {
     throw new Error('');
   }
@@ -26,31 +30,103 @@ export const findQuestionById = async (id: number) => {
 };
 
 export const addQuestion = async (
-  questionData: IQuestionData,
   transaction: Transaction,
+  userId: number,
+  subjectId: number,
+  questionData: IQuestionData,
+  optionsData: IOptionData[],
 ) => {
-  const data = convertKeysToCamel(questionData);
-  const newQuestion = await Question.create(data, { transaction });
+  const user = await User.findByPk(userId, { transaction });
+  const newQuestion = await user?.createQuestion(
+    convertKeysToCamel(questionData),
+    { transaction },
+  );
+  const subject = await Subject.findByPk(subjectId, { transaction });
+  newQuestion?.setSubjects([subject!], { transaction });
+  await Promise.all(
+    optionsData.map((optionData) =>
+      newQuestion?.createOption(convertKeysToCamel(optionData), {
+        transaction,
+      }),
+    ),
+  );
   return newQuestion;
 };
 
 export const modifyQuestion = async (
-  id: number,
-  updateData: Partial<IQuestionData>,
   transaction: Transaction,
+  userId: number,
+  questionId: number,
+  subjectId: number,
+  questionData: Partial<IQuestionData>,
+  optionsData: IOptionData[],
 ) => {
-  const question = await Question.findByPk(id);
-  if (!question) {
-    throw new Error('');
+  const question = await Question.findByPk(questionId, { transaction });
+  if (userId !== convertKeysToCamel(question?.dataValues).authorId) {
+    throw new Error('Unauthorized...');
   }
-  const data = convertKeysToCamel(updateData);
-  await question.update(data, { transaction });
+  const newQuestion = await question?.update(convertKeysToCamel(questionData), {
+    transaction,
+  });
+  const subject = await Subject.findByPk(subjectId, { transaction });
+  await newQuestion?.setSubjects([subject!], { transaction });
+  const optionsExist = await newQuestion?.getOptions();
+  if (optionsExist?.length) {
+    await Promise.all(
+      optionsExist.map((option) => option.destroy({ transaction })),
+    );
+  }
+  await Promise.all(
+    optionsData.map((optionData) =>
+      newQuestion?.createOption(convertKeysToCamel(optionData), {
+        transaction,
+      }),
+    ),
+  );
 };
 
-export const removeQuestion = async (id: number, transaction: Transaction) => {
-  const question = await Question.findByPk(id);
+export const removeQuestion = async (
+  transaction: Transaction,
+  questionId: number,
+) => {
+  const question = await Question.findByPk(questionId, { transaction });
   if (!question) {
     throw new Error('');
   }
   await question.destroy({ transaction });
+};
+
+export const addOrUpdateUserAnswer = async (
+  transaction: Transaction,
+  userId: number,
+  questionId: number,
+  answer: number,
+) => {
+  const user = await User.findByPk(userId, { transaction });
+  const answers = await user?.getAnswers({ transaction });
+  if (answers?.length) {
+    await answers[0].destroy({ transaction });
+  }
+  const userAnswerQuestions = await user?.createAnswer(
+    { question_id: questionId, answer },
+    { transaction },
+  );
+  return userAnswerQuestions;
+};
+
+export const toggleFavoriteQuestion = async (
+  transaction: Transaction,
+  userId: number,
+  questionId: number,
+) => {
+  const user = await User.findByPk(userId, { transaction });
+  const questions = await user?.getFavorites({
+    where: { question_id: questionId },
+    transaction,
+  });
+  if (!questions?.length) {
+    await user?.createFavorite({ question_id: questionId }, { transaction });
+  } else {
+    await questions[0].destroy({ transaction });
+  }
 };

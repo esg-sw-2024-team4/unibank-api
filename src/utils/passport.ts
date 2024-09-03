@@ -1,10 +1,11 @@
+import sequelize from '../config/db';
+
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/env';
 
 import User from '../models/user.model';
 import { createOrUpdateUser } from '../services/auth.service';
-import { withTransaction } from './with-transaction.util';
 
 passport.use(
   new GoogleStrategy(
@@ -17,15 +18,12 @@ passport.use(
       try {
         return done(
           null,
-          await withTransaction(async (tx) =>
-            createOrUpdateUser(
-              {
-                googleId: profile.id,
-                email: profile.emails![0].value,
-                name: profile.displayName,
-              },
-              tx,
-            ),
+          await sequelize.transaction((tx) =>
+            createOrUpdateUser(tx, {
+              googleId: profile.id,
+              email: profile.emails![0].value,
+              name: profile.displayName,
+            }),
           ),
         );
       } catch (err) {

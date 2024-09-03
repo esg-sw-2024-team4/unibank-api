@@ -8,34 +8,25 @@ import {
 } from 'sequelize';
 import sequelize from '../config/db';
 import Question from './question.model';
+import Subject from './subject.model';
 
-class Option extends Model<
-  InferAttributes<Option>,
-  InferCreationAttributes<Option>
+class SubjectQuestion extends Model<
+  InferAttributes<SubjectQuestion>,
+  InferCreationAttributes<SubjectQuestion>
 > {
   declare id: CreationOptional<number>;
+  declare subjectId: ForeignKey<Subject['id']>;
   declare questionId: ForeignKey<Question['id']>;
-  declare option: number;
-  declare isCorrect: boolean;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
 
-Option.init(
+SubjectQuestion.init(
   {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    option: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    isCorrect: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -46,8 +37,8 @@ Option.init(
   },
   {
     sequelize,
-    tableName: 'options',
+    tableName: 'subject_questions',
   },
 );
 
-export default Option;
+export default SubjectQuestion;

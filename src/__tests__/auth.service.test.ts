@@ -11,7 +11,9 @@ import {
   createOrUpdateUser,
 } from '../services/auth.service';
 
-import User from '../models/user.model';
+import models from '../models';
+
+const { User } = models;
 
 let transaction: Transaction;
 
@@ -27,21 +29,18 @@ describe('Auth Service', () => {
 
     describe('deleteUser', () => {
       test('존재하지 않는 사용자에 대한 삭제 요청에 대해서 오류를 발생시킨다', async () => {
-        expect(deleteUser(1, transaction)).rejects.toThrow(
+        expect(deleteUser(transaction, 1)).rejects.toThrow(
           'Invalid request...',
         );
       });
 
       test('존재하는 사용자에 대한 삭제 요청에 대해서 사용자를 삭제한다', async () => {
-        const user = await createOrUpdateUser(
-          {
-            googleId: 'this-is-google-id',
-            email: 'unibank-tester@unibank.test.io',
-            name: 'unibank-tester',
-          },
-          transaction,
-        );
-        await deleteUser(user.dataValues.id, transaction);
+        const user = await createOrUpdateUser(transaction, {
+          googleId: 'this-is-google-id',
+          email: 'unibank-tester@unibank.test.io',
+          name: 'unibank-tester',
+        });
+        await deleteUser(transaction, user.dataValues.id);
         expect(await User.findByPk(user.id)).toBeNull();
       });
     });

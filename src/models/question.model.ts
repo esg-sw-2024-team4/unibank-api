@@ -1,28 +1,53 @@
+import sequelize from '../config/db';
 import {
+  Association,
   CreationOptional,
   DataTypes,
+  ForeignKey,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
+  HasManyRemoveAssociationsMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManySetAssociationsMixin,
 } from 'sequelize';
-import sequelize from '../config/db';
 import Subject from './subject.model';
 import User from './user.model';
+import Option from './option.model';
 
 class Question extends Model<
-  InferAttributes<Question>,
-  InferCreationAttributes<Question>
+  InferAttributes<Question, { omit: 'subjects' | 'options' }>,
+  InferCreationAttributes<Question, { omit: 'subjects' | 'options' }>
 > {
   declare id: CreationOptional<number>;
-  declare subjectId: number;
-  declare authorId: number;
-  declare questionText: string;
-  declare correctAnswer: string;
-  declare explanation: string;
+  declare authorId: ForeignKey<User['id']>;
+  declare title: string;
+  declare description: string;
   declare imageUrl: string | null;
   declare source: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  declare getSubjects: BelongsToManyGetAssociationsMixin<Subject>;
+  declare setSubjects: BelongsToManySetAssociationsMixin<Subject, number>;
+
+  declare subjects?: NonAttribute<Subject[]>;
+
+  declare getOptions: HasManyGetAssociationsMixin<Option>;
+  declare createOption: HasManyCreateAssociationMixin<Option>;
+  declare setOptions: HasManySetAssociationsMixin<Option, number>;
+  declare removeOptions: HasManyRemoveAssociationsMixin<Option, number>;
+
+  declare options?: NonAttribute<Option[]>;
+
+  declare static associations: {
+    subjects: Association<Question, Subject>;
+    options: Association<Question, Option>;
+  };
 }
 
 Question.init(
@@ -32,26 +57,11 @@ Question.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    subjectId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: { model: Subject, key: 'id' },
-      onDelete: 'CASCADE',
-    },
-    authorId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: { model: User, key: 'id' },
-    },
-    questionText: {
+    title: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    correctAnswer: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    explanation: {
+    description: {
       type: DataTypes.TEXT,
       allowNull: false,
     },

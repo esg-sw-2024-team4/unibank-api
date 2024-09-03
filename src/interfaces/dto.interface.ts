@@ -18,13 +18,15 @@ export interface IUserProfile {
 }
 
 export interface IQuestionData {
-  subject_id: number;
-  author_id: number;
-  question_text: string;
-  correct_answer: string;
-  explanation: string;
+  title: string;
+  description: string;
   image_url: string | null;
   source: string;
+}
+
+export interface IOptionData {
+  option: number;
+  is_correct: boolean;
 }
 
 export interface ISubjectData {

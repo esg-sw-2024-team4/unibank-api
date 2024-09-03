@@ -1,6 +1,6 @@
-import { withTransaction } from '../utils/with-transaction.util';
-
 import { asyncHandler } from '../utils/async-handler.util';
+
+import sequelize from '../config/db';
 
 import passport from '../utils/passport';
 
@@ -44,6 +44,7 @@ export const authCallback = asyncHandler(async (req, res, next) => {
 });
 
 export const checkIsAuthenticated = asyncHandler(async (req, res) => {
+  // #swagger.description = "사용자의 액세스 토큰을 기반으로 사용자 정보 반환"
   const { user } = req;
   if (!user) {
     throw new Error('Invalid request...');
@@ -53,10 +54,11 @@ export const checkIsAuthenticated = asyncHandler(async (req, res) => {
 });
 
 export const deleteAccount = asyncHandler(async (req, res) => {
+  // #swagger.description = "사용자의 액세스 토큰을 기반으로 데이터베이스 저장된 정보 삭제"
   const { user } = req;
   if (!user) {
     throw new Error('Invalid request...');
   }
-  await withTransaction(async (tx) => deleteUser(user.id, tx));
+  await sequelize.transaction((tx) => deleteUser(tx, user.id));
   res.status(204).end();
 });

@@ -45,7 +45,7 @@ app.use('/questions', questionRoutes);
 
 app.use(handleError);
 
-db.sync().then(() => {
+db.sync({ alter: true }).then(() => {
   logger.info('Database connected!');
 });
 
