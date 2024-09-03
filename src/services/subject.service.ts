@@ -35,5 +35,7 @@ export const findSubjectById = async (id: number) => {
   if (!subject) {
     throw new Error('');
   }
-  return subject;
+  return {
+    data: subject,
+  };
 };

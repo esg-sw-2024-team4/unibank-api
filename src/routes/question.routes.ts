@@ -8,11 +8,14 @@ import {
   submitUserAnswer,
   updateQuestion,
 } from '../controllers/question.controller';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import {
+  authMiddleware,
+  authPassedMiddleware,
+} from '../middlewares/auth.middleware';
 
 const router = Router();
 
-router.get('/', getQuestions);
+router.get('/', authPassedMiddleware, getQuestions);
 router.get('/:id', getQuestionById);
 router.post('/', authMiddleware, createQuestion);
 router.put('/:id', authMiddleware, updateQuestion);

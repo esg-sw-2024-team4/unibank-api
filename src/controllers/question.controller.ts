@@ -10,7 +10,7 @@ import {
 } from '../services/question.service';
 import sequelize from '../config/db';
 
-export const getQuestions = asyncHandler(async (_, res) => {
+export const getQuestions = asyncHandler(async (req, res) => {
   // #swagger.description = "모든 문제 조회"
   res.json(await findQuestions());
 });

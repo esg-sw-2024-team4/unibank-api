@@ -10,6 +10,7 @@ export const findQuestions = async () => {
     attributes: {
       exclude: ['created_at', 'updated_at'],
     },
+    include: [Question.associations.options],
   });
   return {
     metadata: {
@@ -26,7 +27,9 @@ export const findQuestionById = async (id: number) => {
   if (!question) {
     throw new Error('');
   }
-  return question;
+  return {
+    data: question,
+  };
 };
 
 export const addQuestion = async (
