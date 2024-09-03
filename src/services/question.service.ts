@@ -42,7 +42,7 @@ export const addQuestion = async (
     { transaction },
   );
   const subject = await Subject.findByPk(subjectId, { transaction });
-  newQuestion?.setSubjects([subject!], { transaction });
+  await newQuestion?.setSubjects([subject!], { transaction });
   await Promise.all(
     optionsData.map((optionData) =>
       newQuestion?.createOption(convertKeysToCamel(optionData), {

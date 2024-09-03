@@ -26,6 +26,7 @@ export interface IQuestionData {
 
 export interface IOptionData {
   option: number;
+  option_text: string;
   is_correct: boolean;
 }
 

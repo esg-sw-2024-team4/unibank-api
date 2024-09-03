@@ -16,6 +16,7 @@ class Option extends Model<
   declare id: CreationOptional<number>;
   declare questionId: ForeignKey<Question['id']>;
   declare option: number;
+  declare optionText: string;
   declare isCorrect: boolean;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -30,6 +31,10 @@ Option.init(
     },
     option: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    optionText: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     isCorrect: {
