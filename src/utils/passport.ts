@@ -2,7 +2,11 @@ import sequelize from '../config/db';
 
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/env';
+import {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  BACKEND_URI,
+} from '../config/env';
 
 import User from '../models/user.model';
 import { createOrUpdateUser } from '../services/auth.service';
@@ -12,7 +16,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID!,
       clientSecret: GOOGLE_CLIENT_SECRET!,
-      callbackURL: '/auth/callback',
+      callbackURL: `${BACKEND_URI}/auth/callback`,
     },
     async (_, __, profile, done) => {
       try {

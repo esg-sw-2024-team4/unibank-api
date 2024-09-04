@@ -17,4 +17,5 @@ export const {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   IS_ALLOW_TO_ALL,
+  BACKEND_URI,
 } = process.env;
