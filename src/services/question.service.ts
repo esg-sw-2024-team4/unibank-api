@@ -5,7 +5,22 @@ import { convertKeysToCamel } from '../utils/converter.util';
 
 const { User, Question, Subject } = models;
 
-export const findQuestions = async () => {
+export const findQuestions = async (subjectId?: number) => {
+  if (subjectId) {
+    const subject = await Subject.findByPk(subjectId);
+    const questions = await subject?.getQuestions({
+      attributes: {
+        exclude: ['created_at', 'updated_at'],
+      },
+      include: [Question.associations.options],
+    });
+    return {
+      metadata: {
+        total: questions?.length || 0,
+      },
+      data: questions,
+    };
+  }
   const { count, rows } = await Question.findAndCountAll({
     attributes: {
       exclude: ['created_at', 'updated_at'],

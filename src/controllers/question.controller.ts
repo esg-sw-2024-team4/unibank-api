@@ -11,8 +11,8 @@ import {
 import sequelize from '../config/db';
 
 export const getQuestions = asyncHandler(async (req, res) => {
-  // #swagger.description = "모든 문제 조회"
-  res.json(await findQuestions());
+  // #swagger.description = "모든 문제 또는 과목 별 문제 조회"
+  res.json(await findQuestions(+(req.query.subject_id as string)));
 });
 
 export const getQuestionById = asyncHandler(async (req, res) => {
