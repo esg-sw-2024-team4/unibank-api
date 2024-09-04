@@ -23,10 +23,10 @@ const mockQuestionData = {
 };
 
 const mockOptionsData = [
-  { option: 2, is_correct: false },
-  { option: 3, is_correct: false },
-  { option: 4, is_correct: true },
-  { option: 5, is_correct: false },
+  { option: 2, option_text: '2번 답', is_correct: false },
+  { option: 3, option_text: '3번 답', is_correct: false },
+  { option: 4, option_text: '4번 답', is_correct: true },
+  { option: 5, option_text: '5번 답', is_correct: false },
 ];
 
 describe('Question Service', () => {
