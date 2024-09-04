@@ -141,7 +141,4 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-# Swagger
-swagger-output.json
-
 # End of https://www.toptal.com/developers/gitignore/api/node
