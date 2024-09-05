@@ -34,7 +34,7 @@ export const authCallback = asyncHandler(async (req, res, next) => {
         }
         const { id, googleId, email } = user;
         res.redirect(
-          `${FRONT_WEB_URL}/auth?token=${issueToken({ id, googleId, email })}`,
+          `${FRONT_WEB_URL}?token=${issueToken({ id, googleId, email })}`,
         );
       } catch (err) {
         next(err);
