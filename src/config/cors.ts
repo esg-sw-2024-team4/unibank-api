@@ -1,6 +1,6 @@
-import { FRONT_WEB_URL } from './env';
+import { WHITELIST } from './env';
 
 export default {
-  origin: FRONT_WEB_URL,
+  origin: WHITELIST,
   credentials: true,
 };

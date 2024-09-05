@@ -8,7 +8,8 @@ export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const {
   JWT_SECRET,
   JWT_EXPIRES_IN,
-  WHITELIST: FRONT_WEB_URL,
+  WHITELIST,
+  FRONT_WEB_URL,
   DB_DIALECT,
   DB_HOST,
   DB_USER,
