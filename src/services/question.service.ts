@@ -51,12 +51,18 @@ export const addQuestion = async (
   optionsData: IOptionData[],
 ) => {
   const user = await User.findByPk(userId, { transaction });
-  const newQuestion = await user?.createQuestion(
+  if (!user) {
+    throw new Error('User not found...');
+  }
+  const subject = await Subject.findByPk(subjectId, { transaction });
+  if (!subject) {
+    throw new Error('Subject not found...');
+  }
+  const newQuestion = await user.createQuestion(
     convertKeysToCamel(questionData),
     { transaction },
   );
-  const subject = await Subject.findByPk(subjectId, { transaction });
-  await newQuestion?.setSubjects([subject!], { transaction });
+  await newQuestion.setSubjects([subject], { transaction });
   await Promise.all(
     optionsData.map((optionData) =>
       newQuestion?.createOption(convertKeysToCamel(optionData), {
@@ -76,15 +82,24 @@ export const modifyQuestion = async (
   optionsData: IOptionData[],
 ) => {
   const question = await Question.findByPk(questionId, { transaction });
-  if (userId !== convertKeysToCamel(question?.dataValues).authorId) {
+  if (!question) {
+    throw new Error('Question not found...');
+  }
+  if (userId !== convertKeysToCamel(question.dataValues).authorId) {
     throw new Error('Unauthorized...');
   }
-  const newQuestion = await question?.update(convertKeysToCamel(questionData), {
-    transaction,
-  });
   const subject = await Subject.findByPk(subjectId, { transaction });
-  await newQuestion?.setSubjects([subject!], { transaction });
-  const optionsExist = await newQuestion?.getOptions();
+  if (!subject) {
+    throw new Error('Subject not found...');
+  }
+  const updatedQuestion = await question?.update(
+    convertKeysToCamel(questionData),
+    {
+      transaction,
+    },
+  );
+  await updatedQuestion.setSubjects([subject], { transaction });
+  const optionsExist = await updatedQuestion?.getOptions({ transaction });
   if (optionsExist?.length) {
     await Promise.all(
       optionsExist.map((option) => option.destroy({ transaction })),
@@ -92,7 +107,7 @@ export const modifyQuestion = async (
   }
   await Promise.all(
     optionsData.map((optionData) =>
-      newQuestion?.createOption(convertKeysToCamel(optionData), {
+      updatedQuestion?.createOption(convertKeysToCamel(optionData), {
         transaction,
       }),
     ),
