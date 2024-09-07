@@ -2,8 +2,7 @@ import { Router } from 'express';
 import {
   createQuestion,
   deleteQuestion,
-  getQuestionById,
-  getQuestions,
+  getQuestionsBySubject,
   submitFavoriteQuestion,
   submitUserAnswer,
   updateQuestion,
@@ -15,8 +14,7 @@ import {
 
 const router = Router();
 
-router.get('/', authPassedMiddleware, getQuestions);
-router.get('/:id', getQuestionById);
+router.get('/', authPassedMiddleware, getQuestionsBySubject);
 router.post('/', authMiddleware, createQuestion);
 router.put('/:id', authMiddleware, updateQuestion);
 router.delete('/:id', authMiddleware, deleteQuestion);

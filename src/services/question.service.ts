@@ -3,47 +3,43 @@ import { IOptionData, IQuestionData } from '../interfaces/dto.interface';
 import models from '../models/index';
 import { convertKeysToCamel } from '../utils/converter.util';
 
-const { User, Question, Subject } = models;
+const { User, Subject, Question } = models;
 
-export const findQuestions = async (subjectId?: number) => {
-  if (subjectId) {
-    const subject = await Subject.findByPk(subjectId);
-    const questions = await subject?.getQuestions({
-      attributes: {
-        exclude: ['created_at', 'updated_at'],
-      },
-      include: [Question.associations.options],
-    });
-    return {
-      metadata: {
-        total: questions?.length || 0,
-      },
-      data: questions,
-    };
-  }
-  const { count, rows } = await Question.findAndCountAll({
+export const findQuestionsBySubject = async (
+  subjectId: number,
+  userId?: number,
+) => {
+  const subject = await Subject.findByPk(subjectId);
+  const questionsRaw = await subject?.getQuestions({
     attributes: {
-      exclude: ['created_at', 'updated_at'],
+      exclude: ['createdAt', 'updatedAt'],
     },
-    include: [Question.associations.options],
+    include: [
+      {
+        association: Question.associations.options,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'question_id'] },
+      },
+    ],
+  });
+  let questions: any = questionsRaw?.map((question) => question.toJSON());
+  const total = questions?.length || 0;
+  if (questionsRaw && userId) {
+    const user = await User.findByPk(userId);
+    for (let i = 0; i < total; ++i) {
+      questions[i].isOwned = questions[i].author_id === userId;
+      questions[i].isAccepted = await user?.hasAnswer(questions[i].id);
+      questions[i].isFavorite = await user?.hasFavorite(questions[i].id);
+    }
+  }
+  questions = questions?.map((question: any) => {
+    const { SubjectQuestion, author_id: authorId, ...r } = question;
+    return r;
   });
   return {
     metadata: {
-      total: count,
+      total,
     },
-    data: rows,
-  };
-};
-
-export const findQuestionById = async (id: number) => {
-  const question = await Question.findByPk(id, {
-    include: [Question.associations.options],
-  });
-  if (!question) {
-    throw new Error('');
-  }
-  return {
-    data: question,
+    data: questions,
   };
 };
 

@@ -13,6 +13,9 @@ export const findSubjectsByKeyword = async (search: string) => {
         [Op.like]: `%${search}%`,
       },
     },
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
   });
   return {
     metadata: { total: count },
@@ -31,7 +34,11 @@ export const createSubject = async (
 };
 
 export const findSubjectById = async (id: number) => {
-  const subject = await Subject.findByPk(id);
+  const subject = await Subject.findByPk(id, {
+    attributes: {
+      exclude: ['createdAt', 'updatedAt'],
+    },
+  });
   if (!subject) {
     throw new Error('');
   }

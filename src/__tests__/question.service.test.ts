@@ -1,17 +1,10 @@
 import { Transaction } from 'sequelize';
 import sequelize from '../config/db';
-import {
-  addQuestion,
-  findQuestionById,
-  findQuestions,
-  modifyQuestion,
-  removeQuestion,
-} from '../services/question.service';
+import { addQuestion } from '../services/question.service';
 
 import models from '../models';
-import { assert } from 'console';
 
-const { Question, Subject, User, Option } = models;
+const { Subject, User } = models;
 
 let transaction: Transaction;
 

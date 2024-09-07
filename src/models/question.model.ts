@@ -6,12 +6,10 @@ import {
   ForeignKey,
   HasManyCreateAssociationMixin,
   HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
   NonAttribute,
-  HasManyRemoveAssociationsMixin,
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
 } from 'sequelize';
@@ -39,10 +37,11 @@ class Question extends Model<
 
   declare getOptions: HasManyGetAssociationsMixin<Option>;
   declare createOption: HasManyCreateAssociationMixin<Option>;
-  declare setOptions: HasManySetAssociationsMixin<Option, number>;
-  declare removeOptions: HasManyRemoveAssociationsMixin<Option, number>;
 
   declare options?: NonAttribute<Option[]>;
+
+  declare isAccepted?: NonAttribute<boolean>;
+  declare isFavorite?: NonAttribute<boolean>;
 
   declare static associations: {
     subjects: Association<Question, Subject>;

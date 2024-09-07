@@ -2,22 +2,21 @@ import { asyncHandler } from '../utils/async-handler.util';
 import {
   addQuestion,
   addOrUpdateUserAnswer,
-  findQuestionById,
-  findQuestions,
   modifyQuestion,
   removeQuestion,
   toggleFavoriteQuestion,
+  findQuestionsBySubject,
 } from '../services/question.service';
 import sequelize from '../config/db';
 
-export const getQuestions = asyncHandler(async (req, res) => {
+export const getQuestionsBySubject = asyncHandler(async (req, res) => {
   // #swagger.description = "모든 문제 또는 과목 별 문제 조회"
-  res.json(await findQuestions(+(req.query.subject_id as string)));
-});
-
-export const getQuestionById = asyncHandler(async (req, res) => {
-  // #swagger.description = "기본 키로 문제 조회"
-  res.json(await findQuestionById(+req.params.id));
+  res.json(
+    await findQuestionsBySubject(
+      +(req.query.subject_id as string),
+      req.user?.id,
+    ),
+  );
 });
 
 export const createQuestion = asyncHandler(async (req, res) => {
