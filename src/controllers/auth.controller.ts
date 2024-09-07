@@ -6,13 +6,14 @@ import passport from '../utils/passport';
 
 import { issueToken, deleteUser } from '../services/auth.service';
 import User from '../models/user.model';
-import { FRONT_WEB_URL } from '../config/env';
+import { FRONT_WEB_LOCAL_URL, FRONT_WEB_URL } from '../config/env';
 
 export const auth = asyncHandler(async (req, res, next) => {
   // #swagger.ignore = true
-  passport.authenticate('google', {
+  await passport.authenticate('google', {
     scope: ['profile', 'email'],
     prompt: 'select_account',
+    state: JSON.stringify({ local: req.query.local }),
   })(req, res, next);
 });
 
@@ -21,7 +22,8 @@ export const authCallback = asyncHandler(async (req, res, next) => {
   if (req.query?.error) {
     throw new Error('Something went wrong...');
   }
-  passport.authenticate(
+  const state = JSON.parse(req.query.state as string);
+  await passport.authenticate(
     'google',
     { failWithError: true },
     async (errAuth: any, user: User, info: any) => {
@@ -34,7 +36,7 @@ export const authCallback = asyncHandler(async (req, res, next) => {
         }
         const { id, googleId, email } = user;
         res.redirect(
-          `${FRONT_WEB_URL}?token=${issueToken({ id, googleId, email })}`,
+          `${state.local === 'true' ? FRONT_WEB_LOCAL_URL : FRONT_WEB_URL}?token=${issueToken({ id, googleId, email })}`,
         );
       } catch (err) {
         next(err);
