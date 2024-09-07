@@ -153,7 +153,10 @@ export const addOrUpdateUserAnswer = async (
   if (!user) {
     throw new Error('User not found...');
   }
-  const answers = await user.getAnswers({ transaction });
+  const answers = await user.getAnswers({
+    where: { question_id: questionId },
+    transaction,
+  });
   if (answers.length) {
     await answers[0].destroy({ transaction });
   }
