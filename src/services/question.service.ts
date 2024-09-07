@@ -1,4 +1,4 @@
-import { Transaction, where } from 'sequelize';
+import { Transaction } from 'sequelize';
 import { IOptionData, IQuestionData } from '../interfaces/dto.interface';
 import models from '../models/index';
 import { convertKeysToCamel } from '../utils/converter.util';
