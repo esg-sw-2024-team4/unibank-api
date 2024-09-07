@@ -1,16 +1,20 @@
-import { Transaction } from 'sequelize';
+import { Transaction, where } from 'sequelize';
 import { IOptionData, IQuestionData } from '../interfaces/dto.interface';
 import models from '../models/index';
 import { convertKeysToCamel } from '../utils/converter.util';
 
-const { User, Subject, Question } = models;
+const { User, Subject, Question, UserAnswerQuestion, UserFavoriteQuestion } =
+  models;
 
 export const findQuestionsBySubject = async (
   subjectId: number,
   userId?: number,
 ) => {
   const subject = await Subject.findByPk(subjectId);
-  const questionsRaw = await subject?.getQuestions({
+  if (!subject) {
+    throw new Error('Subject not found...');
+  }
+  const questionsRaw = await subject.getQuestions({
     attributes: {
       exclude: ['createdAt', 'updatedAt'],
     },
@@ -21,17 +25,31 @@ export const findQuestionsBySubject = async (
       },
     ],
   });
-  let questions: any = questionsRaw?.map((question) => question.toJSON());
-  const total = questions?.length || 0;
-  if (questionsRaw && userId) {
-    const user = await User.findByPk(userId);
+  if (!questionsRaw) {
+    return {
+      metadata: {
+        total: 0,
+      },
+      data: [],
+    };
+  }
+  let questions: any = questionsRaw.map((question) => question.toJSON());
+  const total = questions.length || 0;
+  if (userId) {
     for (let i = 0; i < total; ++i) {
       questions[i].isOwned = questions[i].author_id === userId;
-      questions[i].isAccepted = await user?.hasAnswer(questions[i].id);
-      questions[i].isFavorite = await user?.hasFavorite(questions[i].id);
+      const userAnswer = await UserAnswerQuestion.findOne({
+        where: { user_id: userId, question_id: questions[i].id },
+      });
+      if (userAnswer) {
+        questions[i].answerSubmittedPreviously = userAnswer.answer;
+      }
+      questions[i].isFavorite = !!(await UserFavoriteQuestion.findOne({
+        where: { user_id: userId, question_id: questions[i].id },
+      }));
     }
   }
-  questions = questions?.map((question: any) => {
+  questions = questions.map((question: any) => {
     const { SubjectQuestion, author_id: authorId, ...r } = question;
     return r;
   });
@@ -65,7 +83,7 @@ export const addQuestion = async (
   await newQuestion.setSubjects([subject], { transaction });
   await Promise.all(
     optionsData.map((optionData) =>
-      newQuestion?.createOption(convertKeysToCamel(optionData), {
+      newQuestion.createOption(convertKeysToCamel(optionData), {
         transaction,
       }),
     ),
@@ -92,22 +110,22 @@ export const modifyQuestion = async (
   if (!subject) {
     throw new Error('Subject not found...');
   }
-  const updatedQuestion = await question?.update(
+  const updatedQuestion = await question.update(
     convertKeysToCamel(questionData),
     {
       transaction,
     },
   );
   await updatedQuestion.setSubjects([subject], { transaction });
-  const optionsExist = await updatedQuestion?.getOptions({ transaction });
-  if (optionsExist?.length) {
+  const optionsExist = await updatedQuestion.getOptions({ transaction });
+  if (optionsExist.length) {
     await Promise.all(
       optionsExist.map((option) => option.destroy({ transaction })),
     );
   }
   await Promise.all(
     optionsData.map((optionData) =>
-      updatedQuestion?.createOption(convertKeysToCamel(optionData), {
+      updatedQuestion.createOption(convertKeysToCamel(optionData), {
         transaction,
       }),
     ),
@@ -120,7 +138,7 @@ export const removeQuestion = async (
 ) => {
   const question = await Question.findByPk(questionId, { transaction });
   if (!question) {
-    throw new Error('');
+    throw new Error('Question not found...');
   }
   await question.destroy({ transaction });
 };
@@ -132,11 +150,14 @@ export const addOrUpdateUserAnswer = async (
   answer: number,
 ) => {
   const user = await User.findByPk(userId, { transaction });
-  const answers = await user?.getAnswers({ transaction });
-  if (answers?.length) {
+  if (!user) {
+    throw new Error('User not found...');
+  }
+  const answers = await user.getAnswers({ transaction });
+  if (answers.length) {
     await answers[0].destroy({ transaction });
   }
-  const userAnswerQuestions = await user?.createAnswer(
+  const userAnswerQuestions = await user.createAnswer(
     { question_id: questionId, answer },
     { transaction },
   );
@@ -149,12 +170,15 @@ export const toggleFavoriteQuestion = async (
   questionId: number,
 ) => {
   const user = await User.findByPk(userId, { transaction });
-  const questions = await user?.getFavorites({
+  if (!user) {
+    throw new Error('User not found...');
+  }
+  const questions = await user.getFavorites({
     where: { question_id: questionId },
     transaction,
   });
-  if (!questions?.length) {
-    await user?.createFavorite({ question_id: questionId }, { transaction });
+  if (!questions.length) {
+    await user.createFavorite({ question_id: questionId }, { transaction });
   } else {
     await questions[0].destroy({ transaction });
   }

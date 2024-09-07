@@ -45,13 +45,11 @@ class User extends Model<
 
   declare getAnswers: HasManyGetAssociationsMixin<UserAnswerQuestion>;
   declare createAnswer: HasManyCreateAssociationMixin<UserAnswerQuestion>;
-  declare hasAnswer: HasManyHasAssociationMixin<UserAnswerQuestion, number>;
 
   declare answers?: NonAttribute<Question[]>;
 
   declare getFavorites: HasManyGetAssociationsMixin<UserFavoriteQuestion>;
   declare createFavorite: HasManyCreateAssociationMixin<UserFavoriteQuestion>;
-  declare hasFavorite: HasManyHasAssociationMixin<UserFavoriteQuestion, number>;
 
   declare favorites?: NonAttribute<Question[]>;
 

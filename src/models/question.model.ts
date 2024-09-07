@@ -40,7 +40,7 @@ class Question extends Model<
 
   declare options?: NonAttribute<Option[]>;
 
-  declare isAccepted?: NonAttribute<boolean>;
+  declare answerSubmittedPreviously?: NonAttribute<number>;
   declare isFavorite?: NonAttribute<boolean>;
 
   declare static associations: {

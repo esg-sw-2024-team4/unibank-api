@@ -28,7 +28,7 @@ export const createQuestion = asyncHandler(async (req, res) => {
   delete questionData.options;
   res.json(
     await sequelize.transaction((tx) =>
-      addQuestion(tx, req.user!.id, subjectId, questionData, optionsData),
+      addQuestion(tx, req.user!.id, +subjectId, questionData, optionsData),
     ),
   );
 });
@@ -43,9 +43,9 @@ export const updateQuestion = asyncHandler(async (req, res) => {
   await sequelize.transaction((tx) =>
     modifyQuestion(
       tx,
-      req.user!.id!,
+      req.user!.id,
       +req.params.id,
-      subjectId,
+      +subjectId,
       questionData,
       optionsData,
     ),
