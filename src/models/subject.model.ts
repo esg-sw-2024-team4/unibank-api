@@ -1,4 +1,5 @@
 import {
+  Association,
   CreationOptional,
   DataTypes,
   HasManyGetAssociationsMixin,
@@ -21,6 +22,10 @@ class Subject extends Model<
   declare getQuestions: HasManyGetAssociationsMixin<Question>;
 
   declare questions?: NonAttribute<Question[]>;
+
+  declare static associations: {
+    questions: Association<Subject, Question>;
+  };
 }
 
 Subject.init(
