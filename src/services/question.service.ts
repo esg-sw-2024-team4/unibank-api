@@ -2,60 +2,106 @@ import { Transaction } from 'sequelize';
 import { IOptionData, IQuestionData } from '../interfaces/dto.interface';
 import models from '../models/index';
 import { convertKeysToCamel } from '../utils/converter.util';
+import sequelize from '../config/db';
 
-const { User, Subject, Question, UserAnswerQuestion, UserFavoriteQuestion } =
-  models;
+const { User, Subject, Question } = models;
 
 export const findQuestionsBySubject = async (
   subjectId: number,
   userId?: number,
 ) => {
-  const subject = await Subject.findByPk(subjectId);
-  if (!subject) {
-    throw new Error('Subject not found...');
-  }
-  const questionsRaw = await subject.getQuestions({
-    attributes: {
-      exclude: ['createdAt', 'updatedAt'],
-    },
-    include: [
-      {
-        association: Question.associations.options,
-        attributes: { exclude: ['createdAt', 'updatedAt', 'question_id'] },
-      },
-    ],
-  });
-  if (!questionsRaw) {
-    return {
-      metadata: {
-        total: 0,
-      },
-      data: [],
-    };
-  }
-  let questions: any = questionsRaw.map((question) => question.toJSON());
-  const total = questions.length || 0;
-  if (userId) {
-    for (let i = 0; i < total; ++i) {
-      questions[i].isOwned = questions[i].author_id === userId;
-      const userAnswer = await UserAnswerQuestion.findOne({
-        where: { user_id: userId, question_id: questions[i].id },
-      });
-      if (userAnswer) {
-        questions[i].answerSubmittedPreviously = userAnswer.answer;
-      }
-      questions[i].isFavorite = !!(await UserFavoriteQuestion.findOne({
-        where: { user_id: userId, question_id: questions[i].id },
-      }));
+  const [results] = (await sequelize.query(
+    userId
+      ? `
+      SELECT 
+        q.id, 
+        q.title, 
+        q.description, 
+        q.image_url, 
+        q.source, 
+        o.id AS option_id,
+        o.option, 
+        o.option_text, 
+        o.is_correct,
+        q.author_id,
+        uaq.answer AS answer_submitted_previously,
+        ufq.question_id IS NOT NULL AS is_favorite
+      FROM questions q
+      LEFT JOIN 
+        options o 
+          ON q.id = o.question_id
+      LEFT JOIN 
+        user_answer_questions uaq 
+          ON q.id = uaq.question_id AND uaq.user_id = ${userId}
+      LEFT JOIN 
+        user_favorite_questions ufq 
+          ON q.id = ufq.question_id AND ufq.user_id = ${userId}
+      WHERE q.id IN (
+        SELECT question_id 
+        FROM subject_questions 
+        WHERE subject_id = ${subjectId}
+      )
+        `
+      : `
+      SELECT 
+        q.id, 
+        q.title, 
+        q.description, 
+        q.image_url, 
+        q.source, 
+        o.id AS option_id,
+        o.option, 
+        o.option_text, 
+        o.is_correct 
+      FROM questions q 
+      LEFT JOIN options o ON q.id = o.question_id 
+      WHERE q.id IN (
+        SELECT question_id 
+        FROM subject_questions 
+        WHERE subject_id = ${subjectId}
+      )
+        `,
+  )) as any[];
+  const questionsGrouped: any = {};
+  results.forEach((row: any) => {
+    const {
+      id,
+      title,
+      description,
+      image_url: imageUrl,
+      source,
+      option_id: optionId,
+      option,
+      option_text: optionText,
+      is_correct: isCorrect,
+      answer_submitted_previously: answerSubmittedPreviously,
+      is_favorite: isFavorite,
+      author_id: authorId,
+    } = row;
+    if (!questionsGrouped[id]) {
+      questionsGrouped[id] = {
+        id,
+        title,
+        description,
+        imageUrl,
+        source,
+        options: [],
+        isOwned: userId ? authorId === userId : undefined,
+        answerSubmittedPreviously,
+        isFavorite,
+      };
     }
-  }
-  questions = questions.map((question: any) => {
-    const { SubjectQuestion, author_id: authorId, ...r } = question;
-    return r;
+    questionsGrouped[id].options.push({
+      id: optionId,
+      option,
+      optionText,
+      isCorrect,
+    });
   });
+  const questions = Object.values(questionsGrouped);
   return {
     metadata: {
-      total,
+      total: questions.length,
     },
     data: questions,
   };
