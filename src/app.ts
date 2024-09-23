@@ -25,14 +25,6 @@ if (NODE_ENV === 'production') {
   import('helmet').then((helmet) => {
     app.use(helmet.default());
   });
-
-  const webArtifacts = path.join(__dirname, '..', 'web', 'dist');
-
-  app.use(express.static(webArtifacts));
-
-  app.get('*', (_, res) => {
-    res.sendFile(path.join(webArtifacts, 'index.html'));
-  });
 }
 
 app.use(express.json());
@@ -54,7 +46,22 @@ app.use('/api/questions', questionRoutes);
 
 app.use(handleError);
 
+if (NODE_ENV === 'production') {
+  import('helmet').then((helmet) => {
+    app.use(helmet.default());
+  });
+
+  const webArtifacts = path.join(__dirname, '..', '..', 'web', 'dist');
+
+  app.use(express.static(webArtifacts));
+
+  app.get('*', (_, res) => {
+    res.sendFile(path.join(webArtifacts, 'index.html'));
+  });
+}
+
 db.sync({ alter: true }).then(() => {
+  logger.info(`Current environment: ${NODE_ENV}`);
   logger.info('Database connected!');
 });
 
