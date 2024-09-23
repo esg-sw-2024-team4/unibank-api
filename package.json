@@ -6,7 +6,7 @@
     "generate:swagger": "node ./src/swagger/generator.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "rimraf dist && tsc && cd ../web && npm run build",
-    "start": "node dist/server.js",
+    "start": "cross-env NODE_ENV=production node dist/server.js",
     "test": "jest --config jest.config.js",
     "test:watch": "jest --watch --config jest.config.js",
     "prepare": "husky"
@@ -23,6 +23,7 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
