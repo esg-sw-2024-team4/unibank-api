@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import corsOptions from './config/cors';
 
+import session from 'express-session';
+
 import swaggerUI from 'swagger-ui-express';
 import swaggerDocument from './swagger/swagger-output.json';
 
