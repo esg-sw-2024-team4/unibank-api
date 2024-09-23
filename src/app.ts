@@ -15,6 +15,7 @@ import handleError from './middlewares/error.middleware';
 import db from './config/db';
 import logger from './middlewares/logger.middleware';
 import { NODE_ENV } from './config/env';
+import path from 'path';
 
 const app = express();
 
@@ -23,6 +24,14 @@ app.use(cors(corsOptions));
 if (NODE_ENV === 'production') {
   import('helmet').then((helmet) => {
     app.use(helmet.default());
+  });
+
+  const webArtifacts = path.join(__dirname, '..', 'web', 'dist');
+
+  app.use(express.static(webArtifacts));
+
+  app.get('*', (_, res) => {
+    res.sendFile(path.join(webArtifacts, 'index.html'));
   });
 }
 
@@ -39,9 +48,9 @@ if (NODE_ENV === 'development') {
   );
 }
 
-app.use('/auth', authRoutes);
-app.use('/subjects', subjectRoutes);
-app.use('/questions', questionRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/subjects', subjectRoutes);
+app.use('/api/questions', questionRoutes);
 
 app.use(handleError);
 
