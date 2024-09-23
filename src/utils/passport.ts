@@ -16,7 +16,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID!,
       clientSecret: GOOGLE_CLIENT_SECRET!,
-      callbackURL: `${BACKEND_URI}/auth/callback`,
+      callbackURL: `${BACKEND_URI}/api/auth/callback`,
     },
     async (_, __, profile, done) => {
       try {

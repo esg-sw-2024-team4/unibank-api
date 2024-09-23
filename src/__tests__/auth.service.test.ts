@@ -54,8 +54,8 @@ describe('Auth Service', () => {
           googleId: 'this-is-google-id',
           email: 'unibank-tester@unibank.test.io',
         };
-        const token = jwt.sign(payload, JWT_SECRET || 'aaaaa11111', {
-          expiresIn: JWT_EXPIRES_IN || '3h',
+        const token = jwt.sign(payload, JWT_SECRET, {
+          expiresIn: JWT_EXPIRES_IN,
         });
         const result = issueToken(payload);
         expect(result).toBe(token);
