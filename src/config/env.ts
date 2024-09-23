@@ -8,7 +8,6 @@ export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const {
   JWT_SECRET,
   JWT_EXPIRES_IN,
-  WHITELIST,
   FRONT_WEB_URL,
   FRONT_WEB_LOCAL_URL,
   DB_DIALECT,
@@ -18,6 +17,5 @@ export const {
   DB_NAME,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
-  IS_ALLOW_TO_ALL,
   BACKEND_URI,
 } = process.env;
