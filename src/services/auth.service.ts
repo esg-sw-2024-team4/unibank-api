@@ -12,7 +12,7 @@ import { IUserProfile } from '../interfaces/dto.interface';
 const { User } = models;
 
 export const issueToken = ({ id, googleId, email }: IInfoJWTPayload) =>
-  jwt.sign({ id, googleId, email }, JWT_SECRET!, {
+  jwt.sign({ id, googleId, email }, JWT_SECRET || 'aaaaa11111', {
     expiresIn: JWT_EXPIRES_IN || '3h',
   });
 
