@@ -55,6 +55,8 @@ if (NODE_ENV === 'production') {
 
   app.use(express.static(webArtifacts));
 
+  app.use('/assets', express.static(path.join(webArtifacts, 'assets')));
+
   app.get('*', (_, res) => {
     res.sendFile(path.join(webArtifacts, 'index.html'));
   });
