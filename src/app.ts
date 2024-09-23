@@ -14,11 +14,11 @@ import handleError from './middlewares/error.middleware';
 
 import db from './config/db';
 import logger from './middlewares/logger.middleware';
-import { NODE_ENV, IS_ALLOW_TO_ALL } from './config/env';
+import { NODE_ENV } from './config/env';
 
 const app = express();
 
-app.use(IS_ALLOW_TO_ALL === 'true' ? cors() : cors(corsOptions));
+app.use(cors(corsOptions));
 
 if (NODE_ENV === 'production') {
   import('helmet').then((helmet) => {
