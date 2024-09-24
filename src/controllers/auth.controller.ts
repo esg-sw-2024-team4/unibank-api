@@ -50,16 +50,16 @@ export const authCallback = asyncHandler(async (req, res, next) => {
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
   // #swagger.description = "세션에 저장된 사용자의 정보 반환"
-  if (!req.user?.dataValues) {
-    res.status(204).end();
-  } else {
-    const { id, name, email, point } = req.user!.dataValues;
+  if (req && req.user) {
+    const { id, name, email, point } = req.user.dataValues;
     res.json({
       id: id,
       name: name,
       email: email,
       point: point,
     });
+  } else {
+    res.status(204).end();
   }
 });
 
