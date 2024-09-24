@@ -2,14 +2,7 @@ import { Transaction } from 'sequelize';
 
 import sequelize from '../config/db';
 
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET, JWT_EXPIRES_IN } from '../config/env';
-
-import {
-  issueToken,
-  deleteUser,
-  createOrUpdateUser,
-} from '../services/auth.service';
+import { deleteUser, createOrUpdateUser } from '../services/auth.service';
 
 import models from '../models';
 
@@ -42,23 +35,6 @@ describe('Auth Service', () => {
         });
         await deleteUser(transaction, user.dataValues.id);
         expect(await User.findByPk(user.id)).toBeNull();
-      });
-    });
-  });
-
-  describe('without transaction', () => {
-    describe('issueToken', () => {
-      test('Payload 에 따라 JWT 토큰을 발행한다', () => {
-        const payload = {
-          id: 1,
-          googleId: 'this-is-google-id',
-          email: 'unibank-tester@unibank.test.io',
-        };
-        const token = jwt.sign(payload, JWT_SECRET!, {
-          expiresIn: JWT_EXPIRES_IN || '3h',
-        });
-        const result = issueToken(payload);
-        expect(result).toBe(token);
       });
     });
   });

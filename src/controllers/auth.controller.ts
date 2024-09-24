@@ -4,7 +4,7 @@ import sequelize from '../config/db';
 
 import passport from '../utils/passport';
 
-import { issueToken, deleteUser } from '../services/auth.service';
+import { deleteUser } from '../services/auth.service';
 import User from '../models/user.model';
 import { FRONT_WEB_LOCAL_URL, FRONT_WEB_URL } from '../config/env';
 
@@ -26,18 +26,21 @@ export const authCallback = asyncHandler(async (req, res, next) => {
   await passport.authenticate(
     'google',
     { failWithError: true },
-    async (errAuth: any, user: User, info: any) => {
+    async (errAuth: any, user: User, _: any) => {
       try {
         if (errAuth) {
           throw errAuth;
         }
+        const redirectURL = `${state.local === 'true' ? FRONT_WEB_LOCAL_URL : FRONT_WEB_URL}?auth=`;
         if (!user) {
-          return res.status(401).json({ message: info });
+          return res.redirect(`${redirectURL}failure`);
         }
-        const { id, googleId, email } = user;
-        res.redirect(
-          `${state.local === 'true' ? FRONT_WEB_LOCAL_URL : FRONT_WEB_URL}?token=${issueToken({ id, googleId, email })}`,
-        );
+        req.login(user, (err) => {
+          if (err) {
+            return next(err);
+          }
+          res.redirect(`${redirectURL}success`);
+        });
       } catch (err) {
         next(err);
       }
@@ -45,22 +48,43 @@ export const authCallback = asyncHandler(async (req, res, next) => {
   )(req, res, next);
 });
 
-export const checkIsAuthenticated = asyncHandler(async (req, res) => {
-  // #swagger.description = "사용자의 액세스 토큰을 기반으로 사용자 정보 반환"
-  const { user } = req;
-  if (!user) {
-    throw new Error('Invalid request...');
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  // #swagger.description = "세션에 저장된 사용자의 정보 반환"
+  if (!req.user?.dataValues) {
+    res.status(204).end();
   }
-  const { id, name, email, point } = user.dataValues;
-  res.json({ id: id, name: name, email: email, point: point });
+  const { id, name, email, point } = req.user!.dataValues;
+  res.json({
+    id: id,
+    name: name,
+    email: email,
+    point: point,
+  });
 });
 
-export const deleteAccount = asyncHandler(async (req, res) => {
-  // #swagger.description = "사용자의 액세스 토큰을 기반으로 데이터베이스 저장된 정보 삭제"
+export const signout = asyncHandler(async (req, res) => {
+  // #swagger.description = "세션에서 사용자 정보 삭제"
+  req.logout((err) => {
+    if (err) {
+      throw new Error('Failed to logout...');
+    }
+    req.session.destroy((_err) => {
+      if (_err) {
+        return res.status(500).json({ message: 'Something went wrong...' });
+      }
+      res.status(200).json({ message: 'Logout successful!' });
+    });
+  });
+});
+
+export const deleteAccount = asyncHandler(async (req, res, next) => {
+  // #swagger.description = "세션에 저장된 사용자의 정보를 기반으로 데이터베이스 저장된 정보 삭제"
   const { user } = req;
-  if (!user) {
-    throw new Error('Invalid request...');
-  }
-  await sequelize.transaction((tx) => deleteUser(tx, user.id));
-  res.status(204).end();
+  await sequelize.transaction((tx) => deleteUser(tx, user!.id));
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.status(204).end();
+  });
 });

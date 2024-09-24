@@ -5,6 +5,10 @@ import corsOptions from './config/cors';
 
 import session from 'express-session';
 
+import cookieParser from 'cookie-parser';
+
+import passport from './utils/passport';
+
 import swaggerUI from 'swagger-ui-express';
 import swaggerDocument from './swagger/swagger-output.json';
 
@@ -16,11 +20,31 @@ import handleError from './middlewares/error.middleware';
 
 import db from './config/db';
 import logger from './middlewares/logger.middleware';
-import { NODE_ENV, IS_ALLOW_TO_ALL } from './config/env';
+import path from 'path';
+import { NODE_ENV, SESSION_SECRET, SESSION_MAX_AGE } from './config/env';
 
 const app = express();
 
-app.use(IS_ALLOW_TO_ALL === 'true' ? cors() : cors(corsOptions));
+app.use(cors(corsOptions));
+
+app.use(cookieParser());
+
+app.use(
+  session({
+    secret: SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: +SESSION_MAX_AGE! * 1000,
+      sameSite: 'strict',
+    },
+  }),
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 if (NODE_ENV === 'production') {
   import('helmet').then((helmet) => {
@@ -41,13 +65,30 @@ if (NODE_ENV === 'development') {
   );
 }
 
-app.use('/auth', authRoutes);
-app.use('/subjects', subjectRoutes);
-app.use('/questions', questionRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/subjects', subjectRoutes);
+app.use('/api/questions', questionRoutes);
 
 app.use(handleError);
 
+if (NODE_ENV === 'production') {
+  import('helmet').then((helmet) => {
+    app.use(helmet.default());
+  });
+
+  const webArtifacts = path.join(__dirname, '..', '..', 'web', 'dist');
+
+  app.use(express.static(webArtifacts));
+
+  app.use('/assets', express.static(path.join(webArtifacts, 'assets')));
+
+  app.get('*', (_, res) => {
+    res.sendFile(path.join(webArtifacts, 'index.html'));
+  });
+}
+
 db.sync({ alter: true }).then(() => {
+  logger.info(`Current environment: ${NODE_ENV}`);
   logger.info('Database connected!');
 });
 

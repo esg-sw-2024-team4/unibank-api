@@ -2,19 +2,9 @@ import models from '../models/index';
 
 import { Transaction } from 'sequelize';
 
-import jwt from 'jsonwebtoken';
-
-import { IInfoJWTPayload } from '../interfaces/jwt.interface';
-import { JWT_EXPIRES_IN, JWT_SECRET } from '../config/env';
-
 import { IUserProfile } from '../interfaces/dto.interface';
 
 const { User } = models;
-
-export const issueToken = ({ id, googleId, email }: IInfoJWTPayload) =>
-  jwt.sign({ id, googleId, email }, JWT_SECRET!, {
-    expiresIn: JWT_EXPIRES_IN || '3h',
-  });
 
 export const createOrUpdateUser = async (
   transaction: Transaction,
