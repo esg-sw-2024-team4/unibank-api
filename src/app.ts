@@ -25,6 +25,8 @@ import { NODE_ENV, SESSION_SECRET, SESSION_MAX_AGE } from './config/env';
 
 const app = express();
 
+app.set('trust proxy', true);
+
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
