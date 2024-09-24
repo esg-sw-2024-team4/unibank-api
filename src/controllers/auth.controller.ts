@@ -39,7 +39,7 @@ export const authCallback = asyncHandler(async (req, res, next) => {
           if (err) {
             return next(err);
           }
-          res.redirect(`${redirectURL}success`);
+          return res.redirect(`${redirectURL}success`);
         });
       } catch (err) {
         next(err);
@@ -52,14 +52,15 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
   // #swagger.description = "세션에 저장된 사용자의 정보 반환"
   if (!req.user?.dataValues) {
     res.status(204).end();
+  } else {
+    const { id, name, email, point } = req.user!.dataValues;
+    res.json({
+      id: id,
+      name: name,
+      email: email,
+      point: point,
+    });
   }
-  const { id, name, email, point } = req.user!.dataValues;
-  res.json({
-    id: id,
-    name: name,
-    email: email,
-    point: point,
-  });
 });
 
 export const signout = asyncHandler(async (req, res) => {
