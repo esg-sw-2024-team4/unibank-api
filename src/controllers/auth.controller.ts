@@ -72,6 +72,7 @@ export const signout = asyncHandler(async (req, res) => {
       if (_err) {
         return res.status(500).json({ message: 'Something went wrong...' });
       }
+      res.clearCookie('connect.sid');
       res.status(200).json({ message: 'Logout successful!' });
     });
   });
@@ -85,6 +86,7 @@ export const deleteAccount = asyncHandler(async (req, res, next) => {
     if (err) {
       return next(err);
     }
+    res.clearCookie('connect.sid');
     res.status(204).end();
   });
 });
