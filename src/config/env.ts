@@ -16,6 +16,7 @@ export const {
   FRONT_WEB_LOCAL_URL,
   DB_DIALECT,
   DB_HOST,
+  DB_PORT,
   DB_USER,
   DB_PASSWORD,
   DB_NAME,

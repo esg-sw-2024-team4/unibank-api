@@ -9,6 +9,7 @@
 | PORT                 | 웹 서버 포트 번호                              |
 | DB_DIALECT           | 데이터베이스 종류                              |
 | DB_HOST              | 데이터베이스 호스트 이름                       |
+| DB_PORT              | 데이터베이스 서버 포트 번호                    |
 | DB_USER              | 데이터베이스 유저 이름                         |
 | DB_PASSWORD          | 데이터베이스 유저 패스워드                     |
 | DB_NAME              | 데이터베이스 이름                              |

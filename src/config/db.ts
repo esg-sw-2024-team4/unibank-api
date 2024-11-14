@@ -4,6 +4,7 @@ import {
   NODE_ENV,
   DB_DIALECT,
   DB_HOST,
+  DB_PORT,
   DB_NAME,
   DB_PASSWORD,
   DB_USER,
@@ -18,6 +19,7 @@ const sequelize =
       })
     : new Sequelize(DB_NAME!, DB_USER!, DB_PASSWORD, {
         host: DB_HOST,
+        port: +DB_PORT!,
         dialect: DB_DIALECT as Dialect,
         timezone: '+09:00',
         define: {
